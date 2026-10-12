@@ -1,0 +1,14 @@
+{
+ "scene": "full",
+ "camera": "B",
+ "exposure_ev": 1.7,
+ "samples": 64,
+ "res": [
+  1440,
+  1080
+ ],
+ "seconds": 932.7,
+ "blender": "5.2.2 LTS",
+ "watts_per_cd": 0.2603223126518761,
+ "clay": false
+}

@@ -1,0 +1,23 @@
+{
+ "B_full": {
+  "render_table_median_lx": 639.4,
+  "render_table_mean_lx": 660.7,
+  "engine_table_avg_lx": 594.4,
+  "samples": 240,
+  "diff_pct": 7.6
+ },
+ "B_calm": {
+  "render_table_median_lx": 95.2,
+  "render_table_mean_lx": 101.8,
+  "engine_table_avg_lx": 85.8,
+  "samples": 240,
+  "diff_pct": 11.0
+ },
+ "B_dinner": {
+  "render_table_median_lx": 200.0,
+  "render_table_mean_lx": 205.6,
+  "engine_table_avg_lx": 175.1,
+  "samples": 240,
+  "diff_pct": 14.2
+ }
+}

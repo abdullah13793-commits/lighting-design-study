@@ -1,0 +1,4 @@
+{
+  "A": {"loc": [7.05, 2.45, 1.35], "target": [0.0, 2.75, 1.10], "lens_mm": 18, "shift_y": -0.06, "note": "living -> kitchen"},
+  "B": {"loc": [2.75, 4.65, 1.45], "target": [7.2, 0.4, 1.15], "lens_mm": 18, "shift_y": -0.06, "note": "kitchen -> dining, living, window (hero)"}
+}

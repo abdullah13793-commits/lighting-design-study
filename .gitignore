@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+*.exr
+*.oct
+*.blend
+*.blend1
+results/radiance/
+renders/test/
+reports/viewer/

@@ -1,0 +1,14 @@
+{
+ "scene": "dinner",
+ "camera": "B",
+ "exposure_ev": 2.7064414716455234,
+ "samples": 64,
+ "res": [
+  1440,
+  1080
+ ],
+ "seconds": 753.6,
+ "blender": "5.2.2 LTS",
+ "watts_per_cd": 0.2603223126518761,
+ "clay": false
+}

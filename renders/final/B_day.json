@@ -1,0 +1,14 @@
+{
+ "scene": "day",
+ "camera": "B",
+ "exposure_ev": 0.4,
+ "samples": 64,
+ "res": [
+  1440,
+  1080
+ ],
+ "seconds": 513.8,
+ "blender": "5.2.2 LTS",
+ "watts_per_cd": 0.2603223126518761,
+ "clay": false
+}

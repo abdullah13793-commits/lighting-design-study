@@ -1,0 +1,279 @@
+<title>Lumen Study: Open-Plan Living</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a dark "viewing room" — one wide picture stage, then plan + numbers in two columns that stack on phones. */
+:root {
+  --page: #121110; --stage: #1a1918; --raise: #23211e; --rule: #2e2b27;
+  --ink: #f3efe6; --ink2: #b9b2a3; --muted: #8a8478;
+  --lamp: #f2bd55; --lamp-deep: #ad6d17; --good: #3fbf6a; --bad: #e66767; --sky: #6da7ec;
+  --f-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --f-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --f-data: "JetBrains Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+html, body { background: var(--page); color: var(--ink) }
+body { font-family: var(--f-body); font-size: 15px; line-height: 1.55; margin: 0 }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); padding-block: 28px 56px; display: grid; gap: 44px }
+header { display: grid; gap: 10px; max-width: 60rem }
+.eyebrow { font-family: var(--f-data); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--lamp) }
+h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(36px, 6vw, 64px); line-height: 1.02; margin: 0; text-wrap: balance; letter-spacing: -.01em }
+h1 em { color: var(--lamp); font-style: italic }
+h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 3.4vw, 36px); margin: 0; line-height: 1.1; text-wrap: balance }
+.lede { color: var(--ink2); font-size: 17px; max-width: 62ch; margin: 0 }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px }
+.tab { font: 500 14px var(--f-body); color: var(--ink2); background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 7px 15px; cursor: pointer }
+.tab:hover { color: var(--ink); border-color: var(--muted) }
+.tab[aria-selected="true"] { background: var(--lamp); color: #1a1205; border-color: var(--lamp) }
+.tab:focus-visible, .seg button:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px }
+.bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden }
+.seg button { font: 500 13px var(--f-body); color: var(--ink2); background: transparent; border: 0; padding: 7px 12px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--raise); color: var(--ink) }
+.stage { position: relative; width: 100%; max-width: 100%; aspect-ratio: 4 / 3; background: var(--stage); border-radius: 10px; overflow: hidden; user-select: none; touch-action: pan-y; cursor: ew-resize }
+.stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block }
+.stage .top { clip-path: inset(0 0 0 var(--cut, 50%)) }
+.handle { position: absolute; top: 0; bottom: 0; left: var(--cut, 50%); width: 2px; background: var(--ink); transform: translateX(-1px); pointer-events: none }
+.handle::after { content: "⟷"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--page); display: grid; place-items: center; font-size: 18px }
+.tag { position: absolute; bottom: 14px; font: 500 12px var(--f-data); background: rgba(18,17,16,.82); color: var(--ink); padding: 5px 9px; border-radius: 6px; pointer-events: none }
+.tag.l { left: 14px } .tag.r { right: 14px }
+#cut { width: 100%; accent-color: var(--lamp) }
+.desc { color: var(--ink2); margin: 0; max-width: 70ch }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden }
+.kpi { background: var(--stage); padding: 14px 16px; display: grid; gap: 2px; min-width: 0 }
+.kpi b { font: 400 30px/1.1 var(--f-display); font-variant-numeric: tabular-nums }
+.kpi span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em }
+.kpi small { font: 12px var(--f-data); color: var(--ink2) }
+.ok { color: var(--good) } .no { color: var(--bad) }
+.two { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; align-items: start }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr } }
+.plan-box { position: relative; background: var(--stage); border-radius: 10px; padding: 12px }
+canvas { width: 100%; height: auto; display: block }
+.tip { position: absolute; pointer-events: none; font: 12px var(--f-data); background: var(--ink); color: var(--page); padding: 4px 8px; border-radius: 5px; white-space: nowrap; transform: translate(-50%, -130%) }
+.legend { display: flex; align-items: center; gap: 10px; font: 11.5px var(--f-data); color: var(--muted); margin-top: 8px; flex-wrap: wrap }
+.ramp { height: 8px; flex: 1 1 160px; border-radius: 4px; background: linear-gradient(90deg, #221a12, #4a3114, #7a4d14, #ad6d17, #d99325, #f2bd55, #fde3a0, #fff7e3) }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums }
+th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding: 6px 8px; border-bottom: 1px solid var(--rule) }
+td { padding: 8px; border-bottom: 1px solid var(--rule) }
+td.num { font-family: var(--f-data); text-align: right }
+.dims { display: grid; gap: 9px; margin-top: 18px }
+.dim { display: grid; grid-template-columns: 9.5rem 1fr 3.2rem; gap: 10px; align-items: center; font-size: 13px }
+.dim .track { height: 6px; background: var(--raise); border-radius: 3px; overflow: hidden }
+.dim .fill { height: 100%; background: var(--lamp); border-radius: 3px; transition: width .4s ease }
+.dim .v { font-family: var(--f-data); text-align: right; color: var(--ink2) }
+section { display: grid; gap: 16px }
+.figure { background: var(--stage); border-radius: 10px; padding: 10px; overflow-x: auto }
+.figure img { width: 100%; max-width: 100%; display: block; border-radius: 6px }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px }
+.fact h3 { font: 600 14px var(--f-body); margin: 0 0 4px }
+.fact p { margin: 0; color: var(--ink2); font-size: 14px }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px }
+@media (prefers-reduced-motion: reduce) { .dim .fill { transition: none } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Lighting design study · demonstration project</div>
+    <h1>One room, three scenes, <em>one set of numbers</em></h1>
+    <p class="lede">Each image and each plan below comes from the same photometric files. The renders are calibrated to the
+      calculation, the calculation is checked against Radiance, and the dimming levels of two scenes are solved for their targets.</p>
+  </header>
+
+  <section aria-label="Scene renders">
+    <div class="bar">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="seg" role="group" aria-label="Overlay">
+        <button type="button" id="m-E" aria-pressed="true">Illuminance, lx</button>
+        <button type="button" id="m-L" aria-pressed="false">Luminance, cd/m²</button>
+      </div>
+    </div>
+    <div class="stage" id="stage">
+      <img id="imgBase" alt="">
+      <img id="imgTop" class="top" alt="">
+      <div class="handle"></div>
+      <span class="tag l" id="tagL">Render</span><span class="tag r" id="tagR">Illuminance</span>
+    </div>
+    <label class="eyebrow" for="cut" style="color:var(--muted)">Drag the image or this slider to compare</label>
+    <input type="range" id="cut" min="0" max="100" value="50">
+    <p class="desc" id="desc"></p>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section aria-label="Plan">
+    <h2>The workplane, point by point</h2>
+    <div class="two">
+      <div>
+        <div class="plan-box" id="planBox">
+          <canvas id="plan" width="1080" height="780" aria-label="Illuminance plan of the room"></canvas>
+          <div class="tip" id="tip" hidden></div>
+        </div>
+        <div class="legend"><span>10 lx</span><span class="ramp"></span><span>1000 lx</span>
+          <span>· maintained, 0.75 m · hover for values</span></div>
+      </div>
+      <div>
+        <table><thead><tr><th>Zone</th><th style="text-align:right">Ē lx</th><th style="text-align:right">U₀</th><th>Check</th></tr></thead>
+          <tbody id="ztab"></tbody></table>
+        <div class="dims" id="dims"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Verification">
+    <h2>Checked, not just rendered</h2>
+    <div class="kpis" id="vk"></div>
+    <div class="figure"><img src="img/validation.jpg" alt="Engine versus Radiance parity plot and error histogram"></div>
+    <div class="figure"><img src="img/daylight.jpg" alt="Daylight factor plan under a CIE overcast sky"></div>
+  </section>
+
+  <section aria-label="Method">
+    <h2>How it is made</h2>
+    <div class="facts">
+      <div class="fact"><h3>Photometry</h3><p>LM-63 (IES) files drive everything. The reader handles all symmetry types, so manufacturer files drop straight in. This demo uses generic distributions.</p></div>
+      <div class="fact"><h3>Calculation</h3><p>Point-by-point direct light, plus radiosity interreflection with exact form factors (<span id="np"></span> patches, all bounces).</p></div>
+      <div class="fact"><h3>Scenes</h3><p>Light is linear in each circuit's dimming, so the Dinner and Calm levels are solved by bounded least squares against zone targets.</p></div>
+      <div class="fact"><h3>Renders</h3><p>Blender Cycles uses the same IES files. A calibration render fixes the watts-per-candela factor, so the linear passes give real cd/m² and lx.</p></div>
+      <div class="fact"><h3>Sensory Calm</h3><p>The 40–80 lx band comes from the author's MSc field study of light and indoor well-being of autistic adults (DTU, 2025).</p></div>
+      <div class="fact"><h3>Limits</h3><p>The empty-room calculation leaves out furniture, and there are no glare or melanopic metrics yet. Treat it as a design study, not a compliance certificate.</p></div>
+    </div>
+  </section>
+
+  <footer><span>Abdallah Alhussein · MSc Eng, Architectural Engineering, DTU (2026)</span><span>Blender 5.2 · Radiance 6.0 · Python</span></footer>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const ZL = { kitchen_counter: "Kitchen counter", island: "Island", dining_table: "Dining table", living: "Living area" };
+const GL = { kitchen_downlights: "Kitchen downlights", living_downlights: "Living downlights", pendants: "Pendants", floor_lamp: "Uplighters", under_cabinet: "Under-cabinet strip" };
+let cur = 0, mode = "E";
+const $ = id => document.getElementById(id);
+const stops = ["#221a12", "#4a3114", "#7a4d14", "#ad6d17", "#d99325", "#f2bd55", "#fde3a0", "#fff7e3"].map(h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16)));
+function lux2rgb(E) {
+  const t = Math.min(1, Math.max(0, (Math.log10(Math.max(E, 1e-3)) - 1) / 2)) * (stops.length - 1);
+  const i = Math.min(stops.length - 2, Math.floor(t)), f = t - i;
+  return stops[i].map((c, k) => Math.round(c + (stops[i + 1][k] - c) * f));
+}
+function fmt(n) { return Math.round(n).toLocaleString("en") }
+
+function renderTabs() {
+  const box = $("tabs"); box.innerHTML = "";
+  D.scenes.forEach((s, i) => {
+    if (!s.render) return;
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.role = "tab"; b.textContent = s.label;
+    b.setAttribute("aria-selected", i === cur); b.onclick = () => { cur = i; update() };
+    box.appendChild(b);
+  });
+}
+function update() {
+  const s = D.scenes[cur];
+  renderTabs();
+  $("imgBase").src = s.render; $("imgBase").alt = s.label + " render";
+  const ov = mode === "E" ? s.map : s.lum;
+  $("imgTop").src = ov || s.render; $("imgTop").alt = s.label + (mode === "E" ? " illuminance map" : " luminance map");
+  $("tagR").textContent = mode === "E" ? "Illuminance, lx" : "Luminance, cd/m²";
+  $("desc").textContent = s.desc;
+  const k = $("kpis"); k.innerHTML = "";
+  const add = (v, l, sm) => { const d = document.createElement("div"); d.className = "kpi"; d.innerHTML = `<b>${v}</b><span>${l}</span>${sm ? `<small>${sm}</small>` : ""}`; k.appendChild(d) };
+  if (s.grid) {
+    add(`${fmt(s.power)} W`, "Lighting power", `${s.lpd.toFixed(1)} W/m²`);
+    for (const [z, m] of Object.entries(s.zones)) {
+      const pass = m.checks.length ? m.checks.every(c => c.pass) : null;
+      const target = s.solved && s.solved.targets[z] ? `target ${s.solved.targets[z]} lx` : (m.checks[0] ? m.checks[0].rule : "");
+      add(`${fmt(m.E_avg)} lx`, ZL[z], (pass === null ? "" : pass ? '<span class="ok">✓ </span>' : '<span class="no">✗ </span>') + target);
+    }
+  } else add("—", "Daylight render", "numbers: daylight factor below");
+  drawPlan(); table(); dims();
+}
+["E", "L"].forEach(m => $("m-" + m).onclick = () => { mode = m; $("m-E").setAttribute("aria-pressed", m === "E"); $("m-L").setAttribute("aria-pressed", m === "L"); update() });
+
+// compare slider
+const stage = $("stage");
+function setCut(p) { p = Math.max(0, Math.min(100, p)); stage.style.setProperty("--cut", p + "%"); $("cut").value = p }
+$("cut").oninput = e => setCut(+e.target.value);
+let drag = false;
+stage.addEventListener("pointerdown", e => { drag = true; stage.setPointerCapture(e.pointerId); move(e) });
+stage.addEventListener("pointermove", e => drag && move(e));
+stage.addEventListener("pointerup", () => drag = false);
+function move(e) { const r = stage.getBoundingClientRect(); setCut((e.clientX - r.left) / r.width * 100) }
+
+// plan canvas
+const cv = $("plan"), cx = cv.getContext("2d");
+const [L, W] = D.room, pad = 40, sc = (cv.width - 2 * pad) / L;
+cv.height = Math.round(W * sc + 2 * pad + 24);
+const X = x => pad + x * sc, Y = y => cv.height - pad - 24 - y * sc;
+function drawPlan() {
+  const s = D.scenes[cur].grid ? D.scenes[cur] : D.scenes[0];
+  const G = s.grid, ny = G.length, nx = G[0].length;
+  cx.fillStyle = "#1a1918"; cx.fillRect(0, 0, cv.width, cv.height);
+  const off = document.createElement("canvas"); off.width = nx; off.height = ny;
+  const oc = off.getContext("2d"), im = oc.createImageData(nx, ny);
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const c = lux2rgb(G[j][i]), o = ((ny - 1 - j) * nx + i) * 4;
+    im.data[o] = c[0]; im.data[o + 1] = c[1]; im.data[o + 2] = c[2]; im.data[o + 3] = 255;
+  }
+  oc.putImageData(im, 0, 0);
+  cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = "high";
+  cx.drawImage(off, X(0), Y(W), L * sc, W * sc);
+  cx.strokeStyle = "#f3efe6"; cx.lineWidth = 3; cx.strokeRect(X(0), Y(W), L * sc, W * sc);
+  cx.strokeStyle = "#6da7ec"; cx.lineWidth = 7; cx.beginPath(); cx.moveTo(X(D.window.x[0]), Y(0)); cx.lineTo(X(D.window.x[1]), Y(0)); cx.stroke();
+  cx.fillStyle = "#6da7ec"; cx.font = "500 15px 'JetBrains Mono', monospace"; cx.textAlign = "center";
+  cx.fillText("window", X((D.window.x[0] + D.window.x[1]) / 2), Y(0) + 26);
+  cx.setLineDash([7, 5]); cx.lineWidth = 1.5; cx.strokeStyle = "rgba(18,17,16,.85)"; cx.textAlign = "left";
+  for (const [z, d] of Object.entries(D.zones)) {
+    cx.strokeRect(X(d.x[0]), Y(d.y[1]), (d.x[1] - d.x[0]) * sc, (d.y[1] - d.y[0]) * sc);
+    const m = s.zones[z]; cx.fillStyle = "rgba(18,17,16,.82)";
+    const t = `${ZL[z].split(" ")[0]} ${fmt(m.E_avg)} lx`; cx.font = "600 24px 'Instrument Sans', sans-serif";
+    const w = cx.measureText(t).width + 16; cx.fillRect(X(d.x[0]) + 4, Y(d.y[1]) + 4, w, 34);
+    cx.fillStyle = "#f3efe6"; cx.fillText(t, X(d.x[0]) + 12, Y(d.y[1]) + 30);
+  }
+  cx.setLineDash([]);
+  for (const l of D.luminaires) {
+    cx.strokeStyle = "#121110"; cx.lineWidth = 2.2;
+    if (l.line) { cx.beginPath(); cx.moveTo(X(l.line.start[0]), Y(l.line.start[1])); cx.lineTo(X(l.line.end[0]), Y(l.line.end[1])); cx.stroke(); continue }
+    const [x, y] = l.pos; cx.beginPath();
+    if (l.type === "DL") cx.arc(X(x), Y(y), 7, 0, 7);
+    else if (l.type === "PD") { cx.moveTo(X(x), Y(y) - 9); cx.lineTo(X(x) + 9, Y(y)); cx.lineTo(X(x), Y(y) + 9); cx.lineTo(X(x) - 9, Y(y)); cx.closePath() }
+    else { cx.moveTo(X(x), Y(y) - 9); cx.lineTo(X(x) + 9, Y(y) + 7); cx.lineTo(X(x) - 9, Y(y) + 7); cx.closePath() }
+    cx.stroke();
+  }
+}
+cv.addEventListener("pointermove", e => {
+  const s = D.scenes[cur].grid ? D.scenes[cur] : D.scenes[0];
+  const r = cv.getBoundingClientRect(), k = cv.width / r.width;
+  const x = ((e.clientX - r.left) * k - pad) / sc, y = (cv.height - pad - 24 - (e.clientY - r.top) * k) / sc;
+  const tip = $("tip");
+  if (x < 0 || y < 0 || x > L || y > W) { tip.hidden = true; return }
+  const i = Math.min(s.grid[0].length - 1, Math.floor(x / D.grid.spacing)), j = Math.min(s.grid.length - 1, Math.floor(y / D.grid.spacing));
+  tip.hidden = false; tip.textContent = `x ${x.toFixed(1)} m · y ${y.toFixed(1)} m · ${fmt(s.grid[j][i])} lx`;
+  const br = $("planBox").getBoundingClientRect(); tip.style.left = (e.clientX - br.left) + "px"; tip.style.top = (e.clientY - br.top) + "px";
+});
+cv.addEventListener("pointerleave", () => $("tip").hidden = true);
+
+function table() {
+  const s = D.scenes[cur].grid ? D.scenes[cur] : D.scenes[0], tb = $("ztab"); tb.innerHTML = "";
+  for (const [z, m] of Object.entries(s.zones)) {
+    const ck = m.checks.map(c => `<span class="${c.pass ? "ok" : "no"}">${c.pass ? "✓" : "✗"}</span> ${c.rule}`).join("<br>") || "<span style='color:var(--muted)'>no target</span>";
+    tb.insertAdjacentHTML("beforeend", `<tr><td>${ZL[z]}</td><td class="num">${fmt(m.E_avg)}</td><td class="num">${m.U0.toFixed(2)}</td><td style="font-size:12.5px">${ck}</td></tr>`);
+  }
+}
+function dims() {
+  const s = D.scenes[cur].grid ? D.scenes[cur] : D.scenes[0], box = $("dims");
+  box.innerHTML = `<div class="eyebrow" style="color:var(--muted)">Circuit levels · ${s.label}${s.solved ? " (solved)" : ""}</div>`;
+  for (const [g, v] of Object.entries(s.dim))
+    box.insertAdjacentHTML("beforeend", `<div class="dim"><span>${GL[g] || g}</span><div class="track"><div class="fill" style="width:${(100 * v).toFixed(1)}%"></div></div><span class="v">${Math.round(100 * v)}%</span></div>`);
+}
+(function verify() {
+  const v = D.validation, d = D.daylight, k = $("vk");
+  const add = (b, l, sm) => k.insertAdjacentHTML("beforeend", `<div class="kpi"><b>${b}</b><span>${l}</span><small>${sm}</small></div>`);
+  if (v.full) {
+    add(`${v.full.mean_bias_pct > 0 ? "+" : ""}${v.full.mean_bias_pct.toFixed(1)} %`, "Bias vs Radiance", `full scene, ${v.full.points} points`);
+    add(`${v.full.mape_pct.toFixed(1)} %`, "Mean abs. error", `direct only ${v.full.direct_mape_pct.toFixed(1)} %`);
+  }
+  const xs = Object.values(D.crosscheck).map(c => c.diff_pct);
+  if (xs.length) add(`+${Math.round(Math.min(...xs))}–${Math.round(Math.max(...xs))} %`, "Render vs engine", "dining table; render adds furniture + sky light");
+  if (d.DF_avg !== undefined) add(`${d.DF_avg.toFixed(1)} %`, "Mean daylight factor", `${d.area_ge_2pct.toFixed(1)} % of floor ≥ 2 %`);
+  $("np").textContent = D.patches.toLocaleString("en");
+})();
+update();
+</script>

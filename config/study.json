@@ -1,0 +1,54 @@
+{
+  "project": "Open-plan living / kitchen - lighting design study",
+  "units": "metres, lux, lumens, watts",
+  "room": {
+    "size": [7.2, 5.0, 2.7],
+    "reflectance": {"ceiling": 0.85, "walls": 0.65, "floor": 0.35, "window": 0.08},
+    "window": {"wall": "y0", "x": [1.2, 5.6], "z": [0.25, 2.45], "visible_transmittance": 0.70},
+    "maintenance_factor": 0.80
+  },
+  "luminaire_types": {
+    "DL": {"kind": "downlight", "lumens": 900, "beam_deg": 60, "watts": 9.0, "cct": 3000},
+    "PD": {"kind": "pendant", "lumens": 1200, "down_frac": 0.7, "watts": 12.0, "cct": 2700},
+    "FL": {"kind": "uplighter", "lumens": 2000, "up_frac": 0.85, "watts": 20.0, "cct": 2700},
+    "UC": {"kind": "strip", "lumens": 80, "watts": 0.7, "cct": 3000}
+  },
+  "luminaires": [
+    {"id": "DL-K1", "type": "DL", "group": "kitchen_downlights", "pos": [0.85, 1.50, 2.70]},
+    {"id": "DL-K2", "type": "DL", "group": "kitchen_downlights", "pos": [0.85, 2.70, 2.70]},
+    {"id": "DL-K3", "type": "DL", "group": "kitchen_downlights", "pos": [0.85, 3.90, 2.70]},
+    {"id": "DL-K4", "type": "DL", "group": "kitchen_downlights", "pos": [2.05, 2.10, 2.70]},
+    {"id": "DL-K5", "type": "DL", "group": "kitchen_downlights", "pos": [2.05, 3.30, 2.70]},
+    {"id": "DL-L1", "type": "DL", "group": "living_downlights", "pos": [5.30, 1.60, 2.70]},
+    {"id": "DL-L2", "type": "DL", "group": "living_downlights", "pos": [6.60, 1.60, 2.70]},
+    {"id": "DL-L3", "type": "DL", "group": "living_downlights", "pos": [5.30, 3.40, 2.70]},
+    {"id": "DL-L4", "type": "DL", "group": "living_downlights", "pos": [6.60, 3.40, 2.70]},
+    {"id": "PD-1", "type": "PD", "group": "pendants", "pos": [3.60, 2.15, 1.55]},
+    {"id": "PD-2", "type": "PD", "group": "pendants", "pos": [3.60, 3.05, 1.55]},
+    {"id": "FL-1", "type": "FL", "group": "floor_lamp", "pos": [6.95, 4.75, 1.75]},
+    {"id": "FL-2", "type": "FL", "group": "floor_lamp", "pos": [6.95, 0.40, 1.75]},
+    {"id": "UC", "type": "UC", "group": "under_cabinet", "line": {"start": [0.35, 1.10, 1.45], "end": [0.35, 4.30, 1.45], "pitch": 0.2}}
+  ],
+  "scenes": {
+    "full": {"label": "Cook & Gather", "desc": "Everything on: task light on counters and table, ambient in living.",
+      "dim": {"kitchen_downlights": 1.0, "living_downlights": 1.0, "pendants": 1.0, "floor_lamp": 1.0, "under_cabinet": 1.0}},
+    "dinner": {"label": "Dinner", "desc": "Pendants lead, ambient dimmed, kitchen in the background. Dimming solved for the zone targets.",
+      "solve": {"targets": {"dining_table": 175, "living": 80, "island": 60, "kitchen_counter": 100},
+                "bounds": {"kitchen_downlights": [0, 0.3], "living_downlights": [0, 0.3]}}},
+    "calm": {"label": "Sensory Calm", "desc": "No downlights, soft indirect light only, living zone held in a 40-80 lx band. Dimming solved for the zone targets.",
+      "solve": {"targets": {"living": 60, "dining_table": 80, "island": 40, "kitchen_counter": 60},
+                "bounds": {"kitchen_downlights": [0, 0], "living_downlights": [0, 0]}}}
+  },
+  "zones": {
+    "kitchen_counter": {"x": [0.05, 0.65], "y": [1.05, 4.35], "z": 0.90, "target_lx": 300, "min_u0": 0.4},
+    "island": {"x": [1.60, 2.50], "y": [1.60, 3.80], "z": 0.90, "target_lx": 300, "min_u0": 0.4},
+    "dining_table": {"x": [3.15, 4.05], "y": [1.70, 3.50], "z": 0.75, "target_lx": 200, "min_u0": 0.4},
+    "living": {"x": [4.60, 7.20], "y": [0.00, 5.00], "z": 0.75, "target_lx": 100, "min_u0": 0.3}
+  },
+  "scene_targets": {
+    "calm": {"living": {"band_lx": [40, 80]}},
+    "dinner": {"dining_table": {"target_lx": 150}}
+  },
+  "grid": {"spacing": 0.20, "z": 0.75, "border": 0.0},
+  "radiosity_patch": 0.25
+}
